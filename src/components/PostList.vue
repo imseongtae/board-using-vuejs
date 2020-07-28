@@ -22,9 +22,14 @@
 					<td scope="col">{{ post.id }}</td>
 					<!-- 게시물 제목과 댓글 수 -->
 					<td scope="col">
-						<router-link :to="{ name: 'PostListPage' }">{{
-							post.title
-						}}</router-link>
+						<!-- post.id의 타입이 Number 이므로 String으로 변경 -->
+						<router-link
+							:to="{
+								name: 'PostViewPage',
+								params: { postId: post.id.toString() },
+							}"
+							>{{ post.title }}</router-link
+						>
 						[{{ post.comments.length }}]
 					</td>
 					<!-- 게시물작성자 -->
