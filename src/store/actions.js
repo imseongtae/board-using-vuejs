@@ -11,7 +11,9 @@ export default {
 		});
 	},
 	fetchPost({ commit }, postId) {
+		// 인자로 받은 postId를 URI에 포함
 		return api.get(`/posts/${postId}`).then(res => {
+			// 받아온 데이터와 함께 FETCH_POST 변이 실행
 			commit(FETCH_POST, res.data);
 		});
 	},
