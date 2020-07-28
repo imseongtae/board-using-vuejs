@@ -1,9 +1,12 @@
+import Cookies from 'js-cookie'; // 1. js-cookie 라이브러리를 불러옴
+
 // 추가한 스토어의 값을 변경할 수 있는 변이(Mutation) 추가
 // mutations-types 에 선언한 변이 이름을 불러와서 사용하도록 함
 import {
 	FETCH_POST_LIST,
 	FETCH_POST,
 	SET_ACCESS_TOKEN,
+	SET_MY_INFO,
 } from './mutations-types';
 
 import api from '@/api';
@@ -24,6 +27,15 @@ export default {
 		if (accessToken) {
 			state.accessToken = accessToken;
 			api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+			// 2. 쿠키에 토큰을 저장
+			Cookies.set('accessToken', accessToken);
+		}
+	},
+	[SET_MY_INFO](state, me) {
+		// 사용자 정보를 스토어 상태에 반영
+		// 사용자 정보는 로그인이라는 과정 속에서 필요함
+		if (me) {
+			state.me = me;
 		}
 	},
 };
