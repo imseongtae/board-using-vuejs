@@ -1,6 +1,8 @@
 <template>
 	<div class="app-header">
-		<h1>Community</h1>
+		<h1>
+			<router-link to="/">Community</router-link>
+		</h1>
 		<div v-if="isAuthorized">
 			<strong>
 				<!-- <button>사용자님 환영합니다.</button> -->
@@ -55,4 +57,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+h1 a {
+	text-decoration: none;
+	font-size: 1.5rem;
+}
+</style>
