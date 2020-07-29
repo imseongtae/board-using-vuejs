@@ -1,29 +1,52 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+// import AppHeader from '@/components/AppHeader';
+// import PostViewPage from '@/pages/PostViewPage.vue';
+
 Vue.use(VueRouter);
 
 const routes = [
 	{
 		path: '/',
 		name: 'PostListPage',
-		component: () => import('@/pages/PostListPage.vue'),
+		components: {
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/PostListPage.vue'),
+		},
 	},
 	{
 		path: '/post/:postId',
 		name: 'PostViewPage',
-		props: true, // 컴포넌트의 props를 통해 라우트의 파라미터에 접근 설정
-		component: () => import('@/pages/PostViewPage.vue'),
+		components: {
+			// header: AppHeader,
+			// default: PostViewPage,
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/PostViewPage.vue'),
+		},
+		props: {
+			// 컴포넌트의 props를 통해 라우트의 파라미터에 접근 설정
+			default: true, // 대상 컴포넌트의 이름으로 수정
+		},
 	},
 	{
 		path: '/signup',
 		name: 'Signup',
-		component: () => import('@/pages/Signup.vue'),
+		// components 속성을 사용하면 여러개의 router-view에 컴포넌트를 렌더할 수 있음
+		components: {
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/Signup.vue'),
+		},
+		// component: () => import('@/pages/Signup.vue'),
 	},
 	{
 		path: '/signin',
 		name: 'Signin',
-		component: () => import('@/pages/Signin.vue'),
+		// component를 사용하면 이름이 없는 router-view에만 컴포넌트를 렌더함
+		components: {
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/Signin.vue'),
+		},
 	},
 	// route level code-splitting
 	// this generates a separate chunk (about.[hash].js) for this route
