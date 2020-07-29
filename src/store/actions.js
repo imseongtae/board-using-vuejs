@@ -4,6 +4,8 @@ import {
 	FETCH_POST,
 	SET_ACCESS_TOKEN,
 	SET_MY_INFO,
+	DESTROY_ACCESS_TOKEN,
+	DESTROY_MY_INFO,
 } from './mutations-types';
 
 // API 서버와 통신을 통해 변이를 일으킬 액션
@@ -47,5 +49,11 @@ export default {
 		return api.get('/users/me').then(res => {
 			commit(SET_MY_INFO, res.data);
 		});
+	},
+	signout({ commit }) {
+		// signin의 반대 작업
+		// DESTROY_ACCESS_TOKEN 과 DESTROY_MY_INFO 변이를 하나의 signout action으로 정의
+		commit(DESTROY_ACCESS_TOKEN);
+		commit(DESTROY_MY_INFO);
 	},
 };
