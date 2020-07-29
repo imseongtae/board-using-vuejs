@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-// import AppHeader from '@/components/AppHeader';
-// import PostViewPage from '@/pages/PostViewPage.vue';
+import store from '@/store';
 
 Vue.use(VueRouter);
 
@@ -13,6 +12,25 @@ const routes = [
 		components: {
 			header: () => import('@/components/AppHeader'),
 			default: () => import('@/pages/PostListPage.vue'),
+		},
+	},
+	// /create 라우터가 /postId 위에 선언되도록 변경
+	// create 와 일치하는 URL을 가졌는지 먼저 검사하고, 일치하지 않는다면, postId로 이동
+	{
+		path: '/post/create',
+		name: 'PostCreatePage',
+		components: {
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/PostCreatePage'),
+		},
+		beforeEnter(to, from, next) {
+			const { isAuthorized } = store.getters;
+			if (!isAuthorized) {
+				alert('로그인이 필요합니다!');
+				// 로그인이 되어 있지 않은 사용자라면 로그인 페이지로 이동
+				next({ name: 'Signin' });
+			}
+			next();
 		},
 	},
 	{
