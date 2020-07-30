@@ -48,6 +48,50 @@ const routes = [
 		},
 	},
 	{
+		path: '/post/:postId/edit',
+		name: 'PostEditPage',
+		components: {
+			header: () => import('@/components/AppHeader'),
+			default: () => import('@/pages/PostEditPage.vue'),
+		},
+		// postId 파라미터를 URL에 담아주면 컴포넌트의 props 속성으로 전달됨
+		props: {
+			default: true,
+		},
+		beforeEnter(to, from, next) {
+			const { isAuthorized } = store.getters;
+			if (!isAuthorized) {
+				alert('로그인이 필요합니다.');
+				next({ name: 'Signin' });
+				return false;
+			}
+			// next(); // 다르다.. 나는 next()를 통한 진행이 필요할 거라고 생각했는데
+			// 게시물 뷰 페이지에서 사용햇던 fetchPost Action의 재사용
+			store
+				.dispatch('fetchPost', to.params.postId) // action을 호출하기 위한 dispatch
+				.then(() => {
+					const post = store.state.post;
+					// console.log('post', post);
+					// console.log('me', store.state.me);
+					// 게시물 작성자의 id와 현재 로그인된 사용자의 아이디가 일치하는지 확인
+					const isAuthor = post.user.id === store.state.me.id;
+					if (isAuthor) {
+						// 일치한다면 라우팅을 그대로 진행
+						next();
+					} else {
+						alert('게시물의 작성자만 게시물을 수정할 수 있음');
+						// console.log('from 객체', from);
+						next(from);
+						// return false; // return false를 넣어줬더니 해결이 된다..!
+					}
+				})
+				.catch(err => {
+					alert(err.response.data.msg);
+					next(from);
+				});
+		},
+	},
+	{
 		path: '/signup',
 		name: 'Signup',
 		// components 속성을 사용하면 여러개의 router-view에 컴포넌트를 렌더할 수 있음
