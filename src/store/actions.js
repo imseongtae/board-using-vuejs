@@ -6,6 +6,9 @@ import {
 	SET_MY_INFO,
 	DESTROY_ACCESS_TOKEN,
 	DESTROY_MY_INFO,
+	UPDATE_COMMENT,
+	EDIT_COMMENT,
+	DELETE_COMMENT,
 } from './mutations-types';
 
 // API 서버와 통신을 통해 변이를 일으킬 액션
@@ -55,5 +58,31 @@ export default {
 		// DESTROY_ACCESS_TOKEN 과 DESTROY_MY_INFO 변이를 하나의 signout action으로 정의
 		commit(DESTROY_ACCESS_TOKEN);
 		commit(DESTROY_MY_INFO);
+	},
+	createComment({ commit, state }, comment) {
+		// 현재 포스팅의 ID를 상태에 접근해서 가져옴
+		const postId = state.post.id;
+		return api
+			.post(`/posts/${postId}/comments`, { contents: comment })
+			.then(res => {
+				commit(UPDATE_COMMENT, res.data);
+			});
+	},
+	// 댓글 수정 API를 요청하기 위해선 게시물 id, 댓글 id, 수정된 댓글 내용까지 3개의 데이터가 필요함
+	editComment({ commit, state }, { commentId, comment }) {
+		const postId = state.post.id;
+		return api
+			.put(`/posts/${postId}/comments/${commentId}`, {
+				contents: comment,
+			})
+			.then(res => {
+				commit(EDIT_COMMENT, res.data);
+			});
+	},
+	deleteComment({ commit, state }, commentId) {
+		const postId = state.post.id;
+		return api.delete(`/posts/${postId}/comments/${commentId}`).then(() => {
+			commit(DELETE_COMMENT, commentId);
+		});
 	},
 };
