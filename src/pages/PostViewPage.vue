@@ -10,13 +10,19 @@
 		>
 		<button @click="onDelete">삭제</button>
 		<router-link :to="{ name: 'PostListPage' }">목록</router-link>
+		<!-- 댓글 목록 등록 -->
+		<comment-list v-if="post" :comments="post.comments" />
+		<!-- 등록된 컴포넌트와 submit의 이벤트 리스터를 Template에 추가 -->
+		<comment-form @submit="onCommentSubmit" />
 	</div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 import PostView from '@/components/PostView.vue';
+import CommentList from '@/components/CommentList.vue';
+import CommentForm from '@/components/CommentForm.vue';
 
 import api from '@/api';
 
@@ -24,6 +30,8 @@ export default {
 	name: 'PostViewPage',
 	components: {
 		PostView,
+		CommentList,
+		CommentForm,
 	},
 	props: {
 		// PostViewPage 컴포넌트의 path에 정의한 동적 세그먼트 값 postId에 대한 props 값을 설정
@@ -42,10 +50,12 @@ export default {
 	computed: {
 		// 헬퍼함수를 통해 컴포넌트의 데이터에 post 매핑
 		...mapState(['post']),
+		// isAuthorized를 통해 로그인 여부 검사
+		...mapGetters(['isAuthorized']),
 	},
 	methods: {
 		// 헬퍼함수를 컴포넌트 메소드에 매핑
-		...mapActions(['fetchPost']),
+		...mapActions(['fetchPost', 'createComment']),
 		onDelete() {
 			// mapState 헬퍼함수를 통해 매핑된 post의 id 값을 변수에 할당
 			const { id } = this.post;
@@ -69,6 +79,23 @@ export default {
 						alert(err.response.data.msg);
 					}
 				});
+		},
+		onCommentSubmit(comment) {
+			//
+			if (!this.isAuthorized) {
+				// 인증되지 않은 사용자는 경고 메시지와 함께 로그인 페이지로 이동
+				alert('로그인이 필요함');
+				this.$router.push({ name: 'Signin' });
+			} else {
+				// 로그인한 사용자의 경우 액션을 통해 API 서버 호출
+				this.createComment(comment)
+					.then(() => {
+						alert('댓글이 성공적으로 작성되었음');
+					})
+					.catch(err => {
+						alert(err.response.data.msg);
+					});
+			}
 		},
 	},
 };
